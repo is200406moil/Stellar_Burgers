@@ -85,9 +85,55 @@ const burgerConstructorSlice = createSlice({
 export const { addIngredient, removeIngredient, clearConstructor, swapIngredients } = burgerConstructorSlice.actions;
 // --- END burgerConstructorSlice ---
 
+// --- userSlice ---
+import { getUserApi } from '../utils/burger-api';
+import { TUser } from '../utils/types';
+
+export const fetchUser = createAsyncThunk<
+  TUser,
+  void,
+  { rejectValue: string }
+>('user/fetchUser', async (_, { rejectWithValue }) => {
+  try {
+    const res = await getUserApi();
+    if (res.success && res.user) return res.user;
+    return rejectWithValue('Not authorized');
+  } catch {
+    return rejectWithValue('Not authorized');
+  }
+});
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    user: null as TUser | null,
+    isAuth: false,
+    isLoading: false
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isAuth = true;
+      })
+      .addCase(fetchUser.rejected, (state) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuth = false;
+      });
+  }
+});
+// --- END userSlice ---
+
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
-  burgerConstructor: burgerConstructorSlice.reducer
+  burgerConstructor: burgerConstructorSlice.reducer,
+  user: userSlice.reducer
 });
 
 const store = configureStore({

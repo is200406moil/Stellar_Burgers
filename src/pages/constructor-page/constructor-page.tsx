@@ -10,7 +10,7 @@ import { Preloader } from '../../components/ui';
 
 export const ConstructorPage: FC = () => {
   const dispatch = useDispatch();
-  const isIngredientsLoading = useSelector((state) => state.isLoading);
+  const isIngredientsLoading = useSelector((state) => state.ingredients.isLoading);
 
   useEffect(() => {
     dispatch(fetchIngredients());

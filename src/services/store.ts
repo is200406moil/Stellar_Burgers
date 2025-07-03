@@ -86,7 +86,7 @@ export const { addIngredient, removeIngredient, clearConstructor, swapIngredient
 // --- END burgerConstructorSlice ---
 
 // --- userSlice ---
-import { getUserApi, loginUserApi, logoutApi, updateUserApi } from '../utils/burger-api';
+import { getUserApi, loginUserApi, logoutApi, updateUserApi, registerUserApi } from '../utils/burger-api';
 import { TUser } from '../utils/types';
 import { orderBurgerApi } from '../utils/burger-api';
 
@@ -165,6 +165,24 @@ export const orderBurgerThunk = createAsyncThunk<
   }
 });
 
+export const registerUserThunk = createAsyncThunk<
+  TUser,
+  { name: string; email: string; password: string },
+  { rejectValue: string }
+>('user/register', async (data, { rejectWithValue }) => {
+  try {
+    const res = await registerUserApi(data);
+    if (res.success && res.user && res.accessToken && res.refreshToken) {
+      localStorage.setItem('refreshToken', res.refreshToken);
+      document.cookie = `accessToken=${res.accessToken}`;
+      return res.user;
+    }
+    return rejectWithValue('Registration failed');
+  } catch {
+    return rejectWithValue('Registration failed');
+  }
+});
+
 const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -221,6 +239,21 @@ const userSlice = createSlice({
       .addCase(updateUserThunk.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || 'Ошибка обновления профиля';
+      })
+      .addCase(registerUserThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerUserThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isAuth = true;
+      })
+      .addCase(registerUserThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuth = false;
+        state.error = action.payload || 'Registration failed';
       });
   }
 });

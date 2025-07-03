@@ -20,10 +20,14 @@ import {
   Navigate,
   useLocation
 } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from '../../services/store';
+import { fetchUser } from '../../services/store';
 
-// Временная заглушка для авторизации
-const useAuth = () => ({ isAuth: true });
+const useAuth = () => {
+  const isAuth = useSelector((state) => state.user.isAuth);
+  return { isAuth };
+};
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuth } = useAuth();
@@ -103,13 +107,19 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => (
-  <Router>
-    <div className={styles.app}>
-      <AppHeader />
-      <AppRoutes />
-    </div>
-  </Router>
-);
+const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
+  return (
+    <Router>
+      <div className={styles.app}>
+        <AppHeader />
+        <AppRoutes />
+      </div>
+    </Router>
+  );
+};
 
 export default App;

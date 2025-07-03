@@ -10,7 +10,9 @@ import { TOrder } from '@utils-types';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams();
-  const ingredients: TIngredient[] = useSelector(state => state.ingredients.items);
+  const ingredients: TIngredient[] = useSelector(
+    (state) => state.ingredients.items
+  );
   const [orderData, setOrderData] = useState<TOrder | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +20,7 @@ export const OrderInfo: FC = () => {
     if (!number) return;
     setLoading(true);
     getOrderByNumberApi(Number(number))
-      .then(res => setOrderData(res.orders[0]))
+      .then((res) => setOrderData(res.orders[0]))
       .finally(() => setLoading(false));
   }, [number]);
 

@@ -1,6 +1,10 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
-import { useSelector, useDispatch, updateUserThunk } from '../../services/store';
+import {
+  useSelector,
+  useDispatch,
+  updateUserThunk
+} from '../../services/store';
 
 export const Profile: FC = () => {
   const dispatch = useDispatch();
@@ -36,7 +40,7 @@ export const Profile: FC = () => {
     if (Object.keys(dataToSend).length === 0) return;
     const result = await dispatch(updateUserThunk(dataToSend));
     if (updateUserThunk.rejected.match(result)) {
-      setUpdateError(result.payload as string || 'Ошибка обновления профиля');
+      setUpdateError((result.payload as string) || 'Ошибка обновления профиля');
     } else {
       setFormValue((prev) => ({ ...prev, password: '' }));
     }

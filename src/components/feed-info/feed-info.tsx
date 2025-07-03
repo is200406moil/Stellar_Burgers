@@ -11,4 +11,6 @@ const getOrders = (orders: TOrder[], status: string): number[] =>
     .map((item) => item.number)
     .slice(0, 20);
 
-export const FeedInfo: React.FC<FeedInfoUIProps> = (props) => <FeedInfoUI {...props} />;
+export const FeedInfo: React.FC<FeedInfoUIProps> = (props) => (
+  <FeedInfoUI {...props} />
+);

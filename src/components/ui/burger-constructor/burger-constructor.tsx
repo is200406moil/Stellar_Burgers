@@ -88,7 +88,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         />
       </div>
       {orderError && (
-        <div className={styles.error} style={{ color: 'red', marginTop: 8 }}>{orderError}</div>
+        <div className={styles.error} style={{ color: 'red', marginTop: 8 }}>
+          {orderError}
+        </div>
       )}
     </form>
 

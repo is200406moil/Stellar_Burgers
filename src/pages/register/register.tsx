@@ -16,11 +16,13 @@ export const Register: FC = () => {
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setError('');
-    const result = await dispatch(registerUserThunk({ name: userName, email, password }));
+    const result = await dispatch(
+      registerUserThunk({ name: userName, email, password })
+    );
     if (registerUserThunk.fulfilled.match(result)) {
       navigate('/profile', { replace: true });
     } else {
-      setError(result.payload as string || 'Ошибка регистрации');
+      setError((result.payload as string) || 'Ошибка регистрации');
     }
   };
 

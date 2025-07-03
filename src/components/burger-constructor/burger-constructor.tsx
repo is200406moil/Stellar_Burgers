@@ -1,7 +1,11 @@
 import { FC, useMemo, SyntheticEvent, useState } from 'react';
 import { TConstructorIngredient, TOrder } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import { useSelector, useDispatch, orderBurgerThunk } from '../../services/store';
+import {
+  useSelector,
+  useDispatch,
+  orderBurgerThunk
+} from '../../services/store';
 import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
@@ -23,7 +27,11 @@ export const BurgerConstructor: FC = () => {
     }
     setOrderRequest(true);
     setOrderError(null);
-    const ingredientIds = [bun._id, ...ingredients.map((item) => item._id), bun._id];
+    const ingredientIds = [
+      bun._id,
+      ...ingredients.map((item) => item._id),
+      bun._id
+    ];
     const result = await dispatch(orderBurgerThunk(ingredientIds));
     setOrderRequest(false);
     if (orderBurgerThunk.fulfilled.match(result)) {
@@ -37,7 +45,7 @@ export const BurgerConstructor: FC = () => {
         ingredients: []
       });
     } else {
-      setOrderError(result.payload as string || 'Ошибка оформления заказа');
+      setOrderError((result.payload as string) || 'Ошибка оформления заказа');
     }
   };
 
@@ -46,7 +54,10 @@ export const BurgerConstructor: FC = () => {
   const price = useMemo(
     () =>
       (bun ? bun.price * 2 : 0) +
-      ingredients.reduce((s: number, v: TConstructorIngredient) => s + v.price, 0),
+      ingredients.reduce(
+        (s: number, v: TConstructorIngredient) => s + v.price,
+        0
+      ),
     [bun, ingredients]
   );
 

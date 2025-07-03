@@ -51,7 +51,14 @@ const Column: FC<TColumnProps> = ({ title, content }) => (
   </>
 );
 
-export const FeedInfo: FC<{ total: number; totalToday: number }> = ({ total, totalToday }) => {
+export const FeedInfo: FC<{ total: number; totalToday: number }> = ({
+  total,
+  totalToday
+}) => (
   // Здесь можно добавить получение статусов заказов, если нужно
-  return <FeedInfoUI feed={{ total, totalToday }} readyOrders={[]} pendingOrders={[]} />;
-};
+  <FeedInfoUI
+    feed={{ total, totalToday }}
+    readyOrders={[]}
+    pendingOrders={[]}
+  />
+);

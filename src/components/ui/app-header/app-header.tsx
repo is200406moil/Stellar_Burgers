@@ -15,7 +15,11 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
   const matchProfile = useMatch('/profile');
   const matchProfileOrders = useMatch('/profile/orders');
   const matchProfileOrderNumber = useMatch('/profile/orders/:number');
-  const isProfileActive = !!(matchProfile || matchProfileOrders || matchProfileOrderNumber);
+  const isProfileActive = !!(
+    matchProfile ||
+    matchProfileOrders ||
+    matchProfileOrderNumber
+  );
 
   const isAuth = useSelector((state) => state.user.isAuth);
 

@@ -67,7 +67,9 @@ const burgerConstructorSlice = createSlice({
       }
     },
     removeIngredient: (state, action) => {
-      state.ingredients = state.ingredients.filter((item) => item.id !== action.payload);
+      state.ingredients = state.ingredients.filter(
+        (item) => item.id !== action.payload
+      );
     },
     clearConstructor: (state) => {
       state.bun = null;
@@ -82,27 +84,37 @@ const burgerConstructorSlice = createSlice({
   }
 });
 
-export const { addIngredient, removeIngredient, clearConstructor, swapIngredients } = burgerConstructorSlice.actions;
+export const {
+  addIngredient,
+  removeIngredient,
+  clearConstructor,
+  swapIngredients
+} = burgerConstructorSlice.actions;
 // --- END burgerConstructorSlice ---
 
 // --- userSlice ---
-import { getUserApi, loginUserApi, logoutApi, updateUserApi, registerUserApi } from '../utils/burger-api';
+import {
+  getUserApi,
+  loginUserApi,
+  logoutApi,
+  updateUserApi,
+  registerUserApi
+} from '../utils/burger-api';
 import { TUser } from '../utils/types';
 import { orderBurgerApi } from '../utils/burger-api';
 
-export const fetchUser = createAsyncThunk<
-  TUser,
-  void,
-  { rejectValue: string }
->('user/fetchUser', async (_, { rejectWithValue }) => {
-  try {
-    const res = await getUserApi();
-    if (res.success && res.user) return res.user;
-    return rejectWithValue('Not authorized');
-  } catch {
-    return rejectWithValue('Not authorized');
+export const fetchUser = createAsyncThunk<TUser, void, { rejectValue: string }>(
+  'user/fetchUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await getUserApi();
+      if (res.success && res.user) return res.user;
+      return rejectWithValue('Not authorized');
+    } catch {
+      return rejectWithValue('Not authorized');
+    }
   }
-});
+);
 
 export const loginUserThunk = createAsyncThunk<
   TUser,

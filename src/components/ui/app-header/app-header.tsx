@@ -12,7 +12,9 @@ import { NavLink, useMatch } from 'react-router-dom';
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
   // Для вложенных маршрутов profile и profile/orders
   const isProfileActive =
-    useMatch('/profile') || useMatch('/profile/orders') || useMatch('/profile/orders/:number');
+    useMatch('/profile') ||
+    useMatch('/profile/orders') ||
+    useMatch('/profile/orders/:number');
 
   return (
     <header className={styles.header}>
@@ -26,7 +28,9 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
             end
           >
             <BurgerIcon type='primary' />
-            <p className='text text_type_main-default ml-2 mr-10'>Конструктор</p>
+            <p className='text text_type_main-default ml-2 mr-10'>
+              Конструктор
+            </p>
           </NavLink>
           <NavLink
             to='/feed'

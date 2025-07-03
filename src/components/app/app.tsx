@@ -49,6 +49,7 @@ const AppRoutes = () => {
       <Routes location={state?.backgroundLocation || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
@@ -66,6 +67,14 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <ProfileOrders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <PrivateRoute>
+              <OrderInfo />
             </PrivateRoute>
           }
         />

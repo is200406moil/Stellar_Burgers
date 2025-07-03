@@ -88,6 +88,7 @@ export const { addIngredient, removeIngredient, clearConstructor, swapIngredient
 // --- userSlice ---
 import { getUserApi, loginUserApi, logoutApi, updateUserApi } from '../utils/burger-api';
 import { TUser } from '../utils/types';
+import { orderBurgerApi } from '../utils/burger-api';
 
 export const fetchUser = createAsyncThunk<
   TUser,
@@ -147,6 +148,20 @@ export const updateUserThunk = createAsyncThunk<
     return rejectWithValue('Ошибка обновления профиля');
   } catch {
     return rejectWithValue('Ошибка обновления профиля');
+  }
+});
+
+export const orderBurgerThunk = createAsyncThunk<
+  { order: { number: number }; name: string },
+  string[],
+  { rejectValue: string }
+>('order/createOrder', async (ingredientIds, { rejectWithValue }) => {
+  try {
+    const res = await orderBurgerApi(ingredientIds);
+    if (res.success && res.order) return res;
+    return rejectWithValue('Ошибка оформления заказа');
+  } catch {
+    return rejectWithValue('Ошибка оформления заказа');
   }
 });
 

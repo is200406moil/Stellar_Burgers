@@ -1,18 +1,17 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { useSelector, useDispatch, updateUserThunk } from '../../services/store';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const dispatch = useDispatch();
+  const { user, isLoading, error } = useSelector((state) => state.user);
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name || '',
+    email: user?.email || '',
     password: ''
   });
+  const [updateError, setUpdateError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     setFormValue((prevState) => ({
@@ -23,21 +22,34 @@ export const Profile: FC = () => {
   }, [user]);
 
   const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
+    formValue.name !== (user?.name || '') ||
+    formValue.email !== (user?.email || '') ||
     !!formValue.password;
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    setUpdateError(undefined);
+    const dataToSend: { name?: string; email?: string; password?: string } = {};
+    if (formValue.name !== user?.name) dataToSend.name = formValue.name;
+    if (formValue.email !== user?.email) dataToSend.email = formValue.email;
+    if (formValue.password) dataToSend.password = formValue.password;
+    if (Object.keys(dataToSend).length === 0) return;
+    const result = await dispatch(updateUserThunk(dataToSend));
+    if (updateUserThunk.rejected.match(result)) {
+      setUpdateError(result.payload as string || 'Ошибка обновления профиля');
+    } else {
+      setFormValue((prev) => ({ ...prev, password: '' }));
+    }
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name || '',
+      email: user?.email || '',
       password: ''
     });
+    setUpdateError(undefined);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,11 +63,10 @@ export const Profile: FC = () => {
     <ProfileUI
       formValue={formValue}
       isFormChanged={isFormChanged}
+      updateUserError={updateError || error || undefined}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };

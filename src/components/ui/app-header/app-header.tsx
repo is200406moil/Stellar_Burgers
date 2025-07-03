@@ -8,6 +8,7 @@ import {
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
 import { NavLink, useMatch } from 'react-router-dom';
+import { useSelector } from '../../../services/store';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
   // Для вложенных маршрутов profile и profile/orders
@@ -15,6 +16,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
     useMatch('/profile') ||
     useMatch('/profile/orders') ||
     useMatch('/profile/orders/:number');
+  const isAuth = useSelector((state) => state.user.isAuth);
 
   return (
     <header className={styles.header}>
@@ -47,7 +49,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
         </div>
         <div className={styles.link_position_last}>
           <NavLink
-            to='/profile'
+            to={isAuth ? '/profile' : '/login'}
             className={() =>
               `${styles.link} ${isProfileActive ? styles.link_active : ''}`
             }

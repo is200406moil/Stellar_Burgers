@@ -1,7 +1,9 @@
 import { FC } from 'react';
+import { FeedInfoUI } from '../ui/feed-info';
+import { FeedInfoUIProps } from '../ui/feed-info/type';
+import React from 'react';
 
 import { TOrder } from '@utils-types';
-import { FeedInfoUI } from '../ui/feed-info';
 
 const getOrders = (orders: TOrder[], status: string): number[] =>
   orders
@@ -9,20 +11,4 @@ const getOrders = (orders: TOrder[], status: string): number[] =>
     .map((item) => item.number)
     .slice(0, 20);
 
-export const FeedInfo: FC = () => {
-  /** TODO: взять переменные из стора */
-  const orders: TOrder[] = [];
-  const feed = {};
-
-  const readyOrders = getOrders(orders, 'done');
-
-  const pendingOrders = getOrders(orders, 'pending');
-
-  return (
-    <FeedInfoUI
-      readyOrders={readyOrders}
-      pendingOrders={pendingOrders}
-      feed={feed}
-    />
-  );
-};
+export const FeedInfo: React.FC<FeedInfoUIProps> = (props) => <FeedInfoUI {...props} />;

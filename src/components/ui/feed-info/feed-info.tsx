@@ -50,3 +50,8 @@ const Column: FC<TColumnProps> = ({ title, content }) => (
     <p className={`text text_type_digits-large ${styles.content}`}>{content}</p>
   </>
 );
+
+export const FeedInfo: FC<{ total: number; totalToday: number }> = ({ total, totalToday }) => {
+  // Здесь можно добавить получение статусов заказов, если нужно
+  return <FeedInfoUI feed={{ total, totalToday }} readyOrders={[]} pendingOrders={[]} />;
+};

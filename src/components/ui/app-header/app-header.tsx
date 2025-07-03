@@ -11,11 +11,12 @@ import { NavLink, useMatch } from 'react-router-dom';
 import { useSelector } from '../../../services/store';
 
 export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => {
-  // Для вложенных маршрутов profile и profile/orders
-  const isProfileActive =
-    useMatch('/profile') ||
-    useMatch('/profile/orders') ||
-    useMatch('/profile/orders/:number');
+  // Вызови хуки отдельно!
+  const matchProfile = useMatch('/profile');
+  const matchProfileOrders = useMatch('/profile/orders');
+  const matchProfileOrderNumber = useMatch('/profile/orders/:number');
+  const isProfileActive = !!(matchProfile || matchProfileOrders || matchProfileOrderNumber);
+
   const isAuth = useSelector((state) => state.user.isAuth);
 
   return (

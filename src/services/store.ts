@@ -14,11 +14,20 @@ import burgerConstructorReducer, {
   swapIngredients
 } from './burgerConstructorSlice';
 import userReducer from './userSlice';
+import ordersReducer, {
+  fetchFeed,
+  fetchUserOrders,
+  fetchOrderByNumber,
+  clearOrderByNumber,
+  orderBurgerThunk,
+  clearCurrentOrder
+} from './ordersSlice';
 
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   burgerConstructor: burgerConstructorReducer,
-  user: userReducer
+  user: userReducer,
+  orders: ordersReducer
 });
 
 const store = configureStore({
@@ -32,5 +41,7 @@ export const useDispatch: () => AppDispatch = () => dispatchHook();
 export const useSelector: TypedUseSelectorHook<RootState> = selectorHook;
 
 export { addIngredient, removeIngredient, clearConstructor, swapIngredients };
+export { fetchFeed, fetchUserOrders, fetchOrderByNumber, clearOrderByNumber };
+export { orderBurgerThunk, clearCurrentOrder };
 
 export default store;

@@ -4,8 +4,7 @@ import {
   loginUserApi,
   logoutApi,
   updateUserApi,
-  registerUserApi,
-  orderBurgerApi
+  registerUserApi
 } from '../utils/burger-api';
 import { TUser } from '../utils/types';
 
@@ -69,20 +68,6 @@ export const updateUserThunk = createAsyncThunk<
   }
 });
 
-export const orderBurgerThunk = createAsyncThunk<
-  { order: { number: number }; name: string },
-  string[],
-  { rejectValue: string }
->('order/createOrder', async (ingredientIds, { rejectWithValue }) => {
-  try {
-    const res = await orderBurgerApi(ingredientIds);
-    if (res.success && res.order) return res;
-    return rejectWithValue('Ошибка оформления заказа');
-  } catch {
-    return rejectWithValue('Ошибка оформления заказа');
-  }
-});
-
 export const registerUserThunk = createAsyncThunk<
   TUser,
   { name: string; email: string; password: string },
@@ -121,10 +106,11 @@ const userSlice = createSlice({
         state.user = action.payload;
         state.isAuth = true;
       })
-      .addCase(fetchUser.rejected, (state) => {
+      .addCase(fetchUser.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
         state.isAuth = false;
+        state.error = action.payload || 'Not authorized';
       })
       .addCase(loginUserThunk.pending, (state) => {
         state.isLoading = true;
@@ -144,6 +130,9 @@ const userSlice = createSlice({
       .addCase(logoutUserThunk.fulfilled, (state) => {
         state.user = null;
         state.isAuth = false;
+      })
+      .addCase(logoutUserThunk.rejected, (state, action) => {
+        state.error = action.payload || 'Logout failed';
       })
       .addCase(updateUserThunk.pending, (state) => {
         state.isLoading = true;

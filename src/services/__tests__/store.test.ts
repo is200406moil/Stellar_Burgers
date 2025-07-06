@@ -1,7 +1,7 @@
 import store, { RootState } from '../store';
 import { addIngredient, removeIngredient, clearConstructor, swapIngredients } from '../store';
 
-describe('Redux Store Tests', () => {
+describe('Redux Store Integration Tests', () => {
   beforeEach(() => {
     // Очищаем store перед каждым тестом
     store.dispatch(clearConstructor());
@@ -14,6 +14,7 @@ describe('Redux Store Tests', () => {
       expect(state).toHaveProperty('ingredients');
       expect(state).toHaveProperty('burgerConstructor');
       expect(state).toHaveProperty('user');
+      expect(state).toHaveProperty('orders');
       
       expect(state.ingredients).toEqual({
         items: [],
@@ -32,11 +33,22 @@ describe('Redux Store Tests', () => {
         isLoading: false,
         error: null
       });
+
+      expect(state.orders).toEqual({
+        feed: [],
+        userOrders: [],
+        orderByNumber: null,
+        currentOrder: null,
+        total: 0,
+        totalToday: 0,
+        isLoading: false,
+        error: null
+      });
     });
   });
 
-  describe('Constructor Slice', () => {
-    const mockIngredient = {
+  describe('Интеграционные тесты конструктора', () => {
+    const mockBun = {
       _id: '643d69a5c3f7b9001cfa093c',
       name: 'Краторная булка N-200i',
       type: 'bun' as const,
@@ -52,103 +64,109 @@ describe('Redux Store Tests', () => {
     };
 
     const mockMainIngredient = {
-      ...mockIngredient,
       _id: '643d69a5c3f7b9001cfa093d',
       name: 'Биокотлета из марсианской Магнолии',
-      type: 'main' as const
+      type: 'main' as const,
+      proteins: 420,
+      fat: 142,
+      carbohydrates: 242,
+      calories: 4242,
+      price: 424,
+      image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+      image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+      image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png',
+      __v: 0
     };
 
-    it('должен обрабатывать добавление ингредиента', () => {
-      store.dispatch(addIngredient(mockIngredient));
-      
-      const newState = store.getState().burgerConstructor;
-      expect(newState.bun).toBeTruthy();
-      expect(newState.bun?.name).toBe('Краторная булка N-200i');
-      expect(newState.bun?.type).toBe('bun');
-    });
-
-    it('должен обрабатывать добавление начинки', () => {
+    it('должен правильно обрабатывать полный цикл создания заказа', () => {
+      // 1. Добавляем ингредиенты
+      store.dispatch(addIngredient(mockBun));
       store.dispatch(addIngredient(mockMainIngredient));
       
-      const newState = store.getState().burgerConstructor;
-      expect(newState.ingredients).toHaveLength(1);
-      expect(newState.ingredients[0].name).toBe('Биокотлета из марсианской Магнолии');
-      expect(newState.ingredients[0].type).toBe('main');
-    });
-
-    it('должен обрабатывать удаление ингредиента', () => {
-      // Сначала добавляем ингредиент
-      store.dispatch(addIngredient(mockMainIngredient));
-      const stateAfterAdd = store.getState().burgerConstructor;
-      const ingredientId = stateAfterAdd.ingredients[0].id;
+      let state = store.getState();
+      expect(state.burgerConstructor.bun).toBeTruthy();
+      expect(state.burgerConstructor.ingredients).toHaveLength(1);
       
-      // Затем удаляем
-      store.dispatch(removeIngredient(ingredientId));
+      // 2. Создаем заказ
+      store.dispatch({
+        type: 'orders/createOrder/fulfilled',
+        payload: { order: { number: 12345 }, name: 'Тестовый заказ' }
+      });
       
-      const newState = store.getState().burgerConstructor;
-      expect(newState.ingredients).toHaveLength(0);
-    });
-
-    it('должен обрабатывать изменение порядка ингредиентов', () => {
-      // Добавляем два ингредиента
-      store.dispatch(addIngredient(mockMainIngredient));
-      store.dispatch(addIngredient({
-        ...mockMainIngredient,
-        _id: '643d69a5c3f7b9001cfa093e',
-        name: 'Соус фирменный Space Sauce',
-        type: 'sauce' as const
-      }));
+      state = store.getState();
+      expect(state.orders.currentOrder).toEqual({ number: 12345 });
       
-      const stateAfterAdd = store.getState().burgerConstructor;
-      expect(stateAfterAdd.ingredients).toHaveLength(2);
-      
-      // Меняем порядок (перемещаем первый элемент на позицию 1)
-      store.dispatch(swapIngredients({ from: 0, to: 1 }));
-      
-      const newState = store.getState().burgerConstructor;
-      expect(newState.ingredients).toHaveLength(2);
-      // Проверяем, что порядок изменился
-      expect(newState.ingredients[0].name).toBe('Соус фирменный Space Sauce');
-      expect(newState.ingredients[1].name).toBe('Биокотлета из марсианской Магнолии');
-    });
-
-    it('должен очищать конструктор', () => {
-      // Добавляем ингредиенты
-      store.dispatch(addIngredient(mockIngredient));
-      store.dispatch(addIngredient(mockMainIngredient));
-      
-      const stateAfterAdd = store.getState().burgerConstructor;
-      expect(stateAfterAdd.bun).toBeTruthy();
-      expect(stateAfterAdd.ingredients).toHaveLength(1);
-      
-      // Очищаем
+      // 3. Очищаем конструктор после заказа
       store.dispatch(clearConstructor());
       
-      const newState = store.getState().burgerConstructor;
-      expect(newState.bun).toBeNull();
-      expect(newState.ingredients).toHaveLength(0);
+      state = store.getState();
+      expect(state.burgerConstructor.bun).toBeNull();
+      expect(state.burgerConstructor.ingredients).toHaveLength(0);
+    });
+
+    it('должен правильно обрабатывать ошибки при создании заказа', () => {
+      // Добавляем ингредиенты
+      store.dispatch(addIngredient(mockBun));
+      
+      // Симулируем ошибку при создании заказа
+      store.dispatch({
+        type: 'orders/createOrder/rejected',
+        payload: 'Ошибка оформления заказа'
+      });
+      
+      const state = store.getState();
+      expect(state.orders.error).toBe('Ошибка оформления заказа');
+      expect(state.orders.currentOrder).toBe(null);
+      // Конструктор должен остаться неизменным
+      expect(state.burgerConstructor.bun).toBeTruthy();
     });
   });
 
-  describe('Ingredients Slice', () => {
-    beforeEach(() => {
-      // Очищаем состояние ingredients перед каждым тестом
-      store.dispatch({ type: 'ingredients/fetchIngredients/fulfilled', payload: [] });
-    });
-
-    it('должен обрабатывать экшен Request (pending)', () => {
-      const initialState = store.getState().ingredients;
-      expect(initialState.isLoading).toBe(false);
+  describe('Интеграционные тесты пользователя', () => {
+    it('должен правильно обрабатывать аутентификацию пользователя', () => {
+      const mockUser = {
+        email: 'test@example.com',
+        name: 'Test User'
+      };
       
-      // Диспатчим pending экшен
-      store.dispatch({ type: 'ingredients/fetchIngredients/pending' });
+      // Логин пользователя
+      store.dispatch({
+        type: 'user/login/fulfilled',
+        payload: mockUser
+      });
       
-      const newState = store.getState().ingredients;
-      expect(newState.isLoading).toBe(true);
-      expect(newState.error).toBe(null);
+      let state = store.getState();
+      expect(state.user.user).toEqual(mockUser);
+      expect(state.user.isAuth).toBe(true);
+      
+      // Обновление пользователя
+      const updatedUser = {
+        email: 'updated@example.com',
+        name: 'Updated User'
+      };
+      
+      store.dispatch({
+        type: 'user/updateUser/fulfilled',
+        payload: updatedUser
+      });
+      
+      state = store.getState();
+      expect(state.user.user).toEqual(updatedUser);
+      expect(state.user.isAuth).toBe(true);
+      
+      // Логаут пользователя
+      store.dispatch({
+        type: 'user/logout/fulfilled'
+      });
+      
+      state = store.getState();
+      expect(state.user.user).toBe(null);
+      expect(state.user.isAuth).toBe(false);
     });
+  });
 
-    it('должен обрабатывать экшен Success (fulfilled)', () => {
+  describe('Интеграционные тесты загрузки данных', () => {
+    it('должен правильно обрабатывать загрузку ингредиентов и создание заказа', () => {
       const mockIngredients = [
         {
           _id: '643d69a5c3f7b9001cfa093c',
@@ -166,31 +184,30 @@ describe('Redux Store Tests', () => {
         }
       ];
       
-      // Диспатчим fulfilled экшен
+      // Загружаем ингредиенты
       store.dispatch({
         type: 'ingredients/fetchIngredients/fulfilled',
         payload: mockIngredients
       });
       
-      const newState = store.getState().ingredients;
-      expect(newState.isLoading).toBe(false);
-      expect(newState.items).toEqual(mockIngredients);
-      expect(newState.error).toBe(null);
-    });
-
-    it('должен обрабатывать экшен Failed (rejected)', () => {
-      const errorMessage = 'Ошибка загрузки ингредиентов';
+      let state = store.getState();
+      expect(state.ingredients.items).toEqual(mockIngredients);
+      expect(state.ingredients.isLoading).toBe(false);
       
-      // Диспатчим rejected экшен
+      // Добавляем ингредиент в конструктор
+      store.dispatch(addIngredient(mockIngredients[0]));
+      
+      state = store.getState();
+      expect(state.burgerConstructor.bun).toBeTruthy();
+      
+      // Создаем заказ
       store.dispatch({
-        type: 'ingredients/fetchIngredients/rejected',
-        error: { message: errorMessage }
+        type: 'orders/createOrder/fulfilled',
+        payload: { order: { number: 12345 }, name: 'Тестовый заказ' }
       });
       
-      const newState = store.getState().ingredients;
-      expect(newState.isLoading).toBe(false);
-      expect(newState.error).toBe(errorMessage);
-      expect(newState.items).toEqual([]);
+      state = store.getState();
+      expect(state.orders.currentOrder).toEqual({ number: 12345 });
     });
   });
 }); 

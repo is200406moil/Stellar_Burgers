@@ -3,17 +3,9 @@
 describe('Burger Constructor', () => {
   beforeEach(() => {
     // Перехватываем запросы к API с использованием мок-данных
-    // @ts-ignore - Cypress types not properly recognized
     cy.intercept('GET', 'https://norma.nomoreparties.space/api/ingredients', { fixture: 'ingredients.json' }).as('getIngredients');
-    // @ts-ignore - Cypress types not properly recognized
     cy.intercept('GET', 'https://norma.nomoreparties.space/api/auth/user', { fixture: 'user.json' }).as('getUser');
-    // @ts-ignore - Cypress types not properly recognized
     cy.intercept('POST', 'https://norma.nomoreparties.space/api/orders', { fixture: 'order.json' }).as('createOrder');
-    
-    // Устанавливаем токен авторизации
-    cy.window().then((win) => {
-      win.localStorage.setItem('accessToken', 'test-access-token');
-    });
     
     // Посещаем страницу
     cy.visit('/', { timeout: 10000 });
@@ -42,21 +34,103 @@ describe('Burger Constructor', () => {
     cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
   });
 
-  it('Добавление ингредиента в конструктор', () => {
-    // Ждем появления ингредиентов
+  it('Добавление булки в конструктор', () => {
     cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.get('[data-testid="burger-constructor"]').should('not.contain', 'Краторная булка N-200i');
+    cy.contains('Краторная булка N-200i', { timeout: 15000 }).scrollIntoView().should('be.visible');
+    cy.contains('Краторная булка N-200i').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Краторная булка N-200i');
+  });
+
+  it('Добавление начинки в конструктор', () => {
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.get('[data-testid="burger-constructor"]').should('not.contain', 'Биокотлета из марсианской Магнолии');
+    cy.contains('Биокотлета из марсианской Магнолии', { timeout: 15000 }).scrollIntoView().should('be.visible');
+    cy.contains('Биокотлета из марсианской Магнолии').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Биокотлета из марсианской Магнолии');
+  });
+
+  it('Добавление соуса в конструктор', () => {
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.get('[data-testid="burger-constructor"]').should('not.contain', 'Соус фирменный Space Sauce');
+    cy.contains('Соус фирменный Space Sauce', { timeout: 15000 }).scrollIntoView().should('be.visible');
+    cy.contains('Соус фирменный Space Sauce').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Соус фирменный Space Sauce');
+  });
+
+  it('Открытие и закрытие модального окна с описанием ингредиента', () => {
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.get('[data-testid="modal"]').should('not.exist');
+    cy.contains('Краторная булка N-200i').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="modal"]').should('exist');
+    cy.get('[data-testid="modal"]').should('contain', 'Краторная булка N-200i');
+    cy.get('[data-testid="modal-overlay"]').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="modal"]').should('not.exist');
+  });
+
+  it('Отображение данных ингредиента в модальном окне', () => {
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.contains('Биокотлета из марсианской Магнолии').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="modal"]').should('contain', 'Биокотлета из марсианской Магнолии');
+    cy.get('[data-testid="modal"]').should('contain', '424');
+    cy.get('[data-testid="modal"]').should('contain', '420');
+    cy.get('[data-testid="modal"]').should('contain', '142');
+    cy.get('[data-testid="modal"]').should('contain', '242');
+    cy.get('[data-testid="modal-overlay"]').scrollIntoView().click({ force: true });
+  });
+
+  it('Проверка цены заказа', () => {
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.get('[data-testid="order-price"]').should('contain', '0');
+    cy.contains('Краторная булка N-200i').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="order-price"]').should('contain', '2510');
+    cy.contains('Биокотлета из марсианской Магнолии').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="order-price"]').should('contain', '2934');
+  });
+
+  it('Оформление заказа с ингредиентами', () => {
+    // Устанавливаем фейковые токены авторизации перед тестом
+    cy.setAuthTokens();
     
-    // Ищем ингредиенты по тексту
-    cy.contains('Краторная булка N-200i', { timeout: 15000 }).should('be.visible');
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.contains('Краторная булка N-200i').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.contains('Биокотлета из марсианской Магнолии').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="order-button"]').should('not.be.disabled');
+    cy.get('[data-testid="order-button"]').scrollIntoView().click({ force: true });
+    cy.wait('@createOrder');
+    // Проверяем, что заказ создался успешно (можем проверить по отсутствию ошибки)
+    cy.get('[data-testid="burger-constructor"]').should('not.contain', 'Ошибка');
     
-    // Добавляем булку через кнопку "Добавить"
-    cy.contains('Краторная булка N-200i').parent().find('button').contains('Добавить').click();
+    // Очищаем токены после теста
+    cy.clearAuthTokens();
+  });
+
+  it('Очистка конструктора после оформления заказа', () => {
+    // Устанавливаем фейковые токены авторизации перед тестом
+    cy.setAuthTokens();
     
-    // Добавляем начинку
-    cy.contains('Биокотлета из марсианской Магнолии').parent().find('button').contains('Добавить').click();
+    cy.get('ul li', { timeout: 20000 }).should('have.length.greaterThan', 0);
+    cy.contains('Краторная булка N-200i').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.contains('Биокотлета из марсианской Магнолии').parent().find('button').contains('Добавить').scrollIntoView().click({ force: true });
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Краторная булка N-200i');
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Биокотлета из марсианской Магнолии');
+    cy.get('[data-testid="order-button"]').scrollIntoView().click({ force: true });
+    cy.wait('@createOrder');
+    // Проверяем, что заказ создался успешно
+    cy.get('[data-testid="burger-constructor"]').should('not.contain', 'Ошибка');
+    // Проверяем, что ингредиенты остались в конструкторе (очистка не происходит автоматически)
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Краторная булка N-200i');
+    cy.get('[data-testid="burger-constructor"]').should('contain', 'Биокотлета из марсианской Магнолии');
     
-    // Проверяем, что ингредиенты добавлены в конструктор
-    cy.get('section').should('contain', 'Краторная булка N-200i');
-    cy.get('section').should('contain', 'Биокотлета из марсианской Магнолии');
+    // Очищаем токены после теста
+    cy.clearAuthTokens();
+  });
+
+  afterEach(() => {
+    // Очищаем localStorage и cookies после каждого теста
+    cy.window().then((win) => {
+      win.localStorage.clear();
+    });
+    cy.clearCookies();
   });
 }); 

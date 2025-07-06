@@ -1,13 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import ingredientsReducer, { fetchIngredients } from '../ingredientsSlice';
 
-const createTestStore = () => {
-  return configureStore({
+const createTestStore = () =>
+  configureStore({
     reducer: {
       ingredients: ingredientsReducer
     }
   });
-};
 
 describe('Ingredients Slice', () => {
   let store: ReturnType<typeof createTestStore>;
@@ -27,7 +26,7 @@ describe('Ingredients Slice', () => {
 
   it('должен обрабатывать fetchIngredients.pending', () => {
     store.dispatch({ type: fetchIngredients.pending.type });
-    
+
     const state = store.getState().ingredients;
     expect(state.isLoading).toBe(true);
     expect(state.error).toBe(null);
@@ -59,7 +58,8 @@ describe('Ingredients Slice', () => {
         calories: 4242,
         price: 424,
         image: 'https://code.s3.yandex.net/react/code/meat-01.png',
-        image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+        image_mobile:
+          'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
         image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png',
         __v: 0
       }
@@ -78,7 +78,7 @@ describe('Ingredients Slice', () => {
 
   it('должен обрабатывать fetchIngredients.rejected', () => {
     const errorMessage = 'Ошибка загрузки ингредиентов';
-    
+
     store.dispatch({
       type: fetchIngredients.rejected.type,
       error: { message: errorMessage }
@@ -142,9 +142,9 @@ describe('Ingredients Slice', () => {
     });
 
     const state = store.getState().ingredients;
-    const buns = state.items.filter(item => item.type === 'bun');
-    const mains = state.items.filter(item => item.type === 'main');
-    const sauces = state.items.filter(item => item.type === 'sauce');
+    const buns = state.items.filter((item) => item.type === 'bun');
+    const mains = state.items.filter((item) => item.type === 'main');
+    const sauces = state.items.filter((item) => item.type === 'sauce');
 
     expect(buns).toHaveLength(1);
     expect(buns[0].name).toBe('Булка');
@@ -265,4 +265,4 @@ describe('Ingredients Slice', () => {
     // Данные должны остаться от предыдущего успешного запроса
     expect(state.items).toEqual(mockIngredients);
   });
-}); 
+});

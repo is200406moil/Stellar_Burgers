@@ -7,20 +7,20 @@ const localStorageMock = {
   removeItem: jest.fn(),
   clear: jest.fn(),
   length: 0,
-  key: jest.fn(),
+  key: jest.fn()
 };
 global.localStorage = localStorageMock as Storage;
 
 // Mock для document.cookie
 Object.defineProperty(document, 'cookie', {
   writable: true,
-  value: '',
+  value: ''
 });
 
 // Mock для window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -28,7 +28,6 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: jest.fn(), // deprecated
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-}); 
- 
+    dispatchEvent: jest.fn()
+  }))
+});

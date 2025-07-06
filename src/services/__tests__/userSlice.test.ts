@@ -7,13 +7,12 @@ import userReducer, {
   registerUserThunk
 } from '../userSlice';
 
-const createTestStore = () => {
-  return configureStore({
+const createTestStore = () =>
+  configureStore({
     reducer: {
       user: userReducer
     }
   });
-};
 
 describe('User Slice', () => {
   let store: ReturnType<typeof createTestStore>;
@@ -38,7 +37,7 @@ describe('User Slice', () => {
   describe('fetchUser', () => {
     it('должен обрабатывать fetchUser.pending', () => {
       store.dispatch({ type: fetchUser.pending.type });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -49,12 +48,12 @@ describe('User Slice', () => {
         email: 'test@example.com',
         name: 'Test User'
       };
-      
+
       store.dispatch({
         type: fetchUser.fulfilled.type,
         payload: mockUser
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toEqual(mockUser);
@@ -67,7 +66,7 @@ describe('User Slice', () => {
         type: fetchUser.rejected.type,
         payload: 'Not authorized'
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toBe(null);
@@ -79,7 +78,7 @@ describe('User Slice', () => {
   describe('loginUserThunk', () => {
     it('должен обрабатывать loginUserThunk.pending', () => {
       store.dispatch({ type: loginUserThunk.pending.type });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -90,12 +89,12 @@ describe('User Slice', () => {
         email: 'test@example.com',
         name: 'Test User'
       };
-      
+
       store.dispatch({
         type: loginUserThunk.fulfilled.type,
         payload: mockUser
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toEqual(mockUser);
@@ -108,7 +107,7 @@ describe('User Slice', () => {
         type: loginUserThunk.rejected.type,
         payload: 'Login failed'
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toBe(null);
@@ -124,21 +123,21 @@ describe('User Slice', () => {
         email: 'test@example.com',
         name: 'Test User'
       };
-      
+
       store.dispatch({
         type: loginUserThunk.fulfilled.type,
         payload: mockUser
       });
-      
+
       let state = store.getState().user;
       expect(state.user).toBeTruthy();
       expect(state.isAuth).toBe(true);
-      
+
       // Выполняем logout
       store.dispatch({
         type: logoutUserThunk.fulfilled.type
       });
-      
+
       state = store.getState().user;
       expect(state.user).toBe(null);
       expect(state.isAuth).toBe(false);
@@ -149,7 +148,7 @@ describe('User Slice', () => {
         type: logoutUserThunk.rejected.type,
         payload: 'Logout failed'
       });
-      
+
       const state = store.getState().user;
       expect(state.error).toBe('Logout failed');
     });
@@ -158,7 +157,7 @@ describe('User Slice', () => {
   describe('updateUserThunk', () => {
     it('должен обрабатывать updateUserThunk.pending', () => {
       store.dispatch({ type: updateUserThunk.pending.type });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -169,12 +168,12 @@ describe('User Slice', () => {
         email: 'updated@example.com',
         name: 'Updated User'
       };
-      
+
       store.dispatch({
         type: updateUserThunk.fulfilled.type,
         payload: mockUser
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toEqual(mockUser);
@@ -187,7 +186,7 @@ describe('User Slice', () => {
         type: updateUserThunk.rejected.type,
         payload: 'Ошибка обновления профиля'
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe('Ошибка обновления профиля');
@@ -197,7 +196,7 @@ describe('User Slice', () => {
   describe('registerUserThunk', () => {
     it('должен обрабатывать registerUserThunk.pending', () => {
       store.dispatch({ type: registerUserThunk.pending.type });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -208,12 +207,12 @@ describe('User Slice', () => {
         email: 'new@example.com',
         name: 'New User'
       };
-      
+
       store.dispatch({
         type: registerUserThunk.fulfilled.type,
         payload: mockUser
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toEqual(mockUser);
@@ -226,7 +225,7 @@ describe('User Slice', () => {
         type: registerUserThunk.rejected.type,
         payload: 'Registration failed'
       });
-      
+
       const state = store.getState().user;
       expect(state.isLoading).toBe(false);
       expect(state.user).toBe(null);
@@ -242,36 +241,36 @@ describe('User Slice', () => {
         email: 'test@example.com',
         name: 'Test User'
       };
-      
+
       store.dispatch({
         type: loginUserThunk.fulfilled.type,
         payload: mockUser
       });
-      
+
       let state = store.getState().user;
       expect(state.user).toEqual(mockUser);
       expect(state.isAuth).toBe(true);
-      
+
       // Update
       const updatedUser = {
         email: 'updated@example.com',
         name: 'Updated User'
       };
-      
+
       store.dispatch({
         type: updateUserThunk.fulfilled.type,
         payload: updatedUser
       });
-      
+
       state = store.getState().user;
       expect(state.user).toEqual(updatedUser);
       expect(state.isAuth).toBe(true);
-      
+
       // Logout
       store.dispatch({
         type: logoutUserThunk.fulfilled.type
       });
-      
+
       state = store.getState().user;
       expect(state.user).toBe(null);
       expect(state.isAuth).toBe(false);
@@ -283,22 +282,22 @@ describe('User Slice', () => {
         email: 'test@example.com',
         name: 'Test User'
       };
-      
+
       store.dispatch({
         type: loginUserThunk.fulfilled.type,
         payload: mockUser
       });
-      
+
       let state = store.getState().user;
       expect(state.user).toEqual(mockUser);
       expect(state.isAuth).toBe(true);
-      
+
       // Ошибка при update
       store.dispatch({
         type: updateUserThunk.rejected.type,
         payload: 'Ошибка обновления профиля'
       });
-      
+
       state = store.getState().user;
       expect(state.error).toBe('Ошибка обновления профиля');
       // Пользователь должен остаться неизменным
@@ -309,22 +308,22 @@ describe('User Slice', () => {
     it('должен правильно обрабатывать состояние загрузки', () => {
       // Начинаем загрузку
       store.dispatch({ type: fetchUser.pending.type });
-      
+
       let state = store.getState().user;
       expect(state.isLoading).toBe(true);
-      
+
       // Завершаем загрузку успешно
       store.dispatch({
         type: fetchUser.fulfilled.type,
         payload: { email: 'test@example.com', name: 'Test User' }
       });
-      
+
       state = store.getState().user;
       expect(state.isLoading).toBe(false);
-      
+
       // Начинаем новую загрузку
       store.dispatch({ type: updateUserThunk.pending.type });
-      
+
       state = store.getState().user;
       expect(state.isLoading).toBe(true);
     });
@@ -337,34 +336,34 @@ describe('User Slice', () => {
         type: fetchUser.fulfilled.type,
         payload: { email: 'test@example.com', name: 'Test User' }
       });
-      
+
       let state = store.getState().user;
       expect(state.isAuth).toBe(true);
-      
+
       // Очищаем состояние
       store.dispatch({
         type: fetchUser.rejected.type,
         payload: 'Not authorized'
       });
-      
+
       state = store.getState().user;
       expect(state.isAuth).toBe(false);
-      
+
       // login успешен
       store.dispatch({
         type: loginUserThunk.fulfilled.type,
         payload: { email: 'test@example.com', name: 'Test User' }
       });
-      
+
       state = store.getState().user;
       expect(state.isAuth).toBe(true);
-      
+
       // register успешен
       store.dispatch({
         type: registerUserThunk.fulfilled.type,
         payload: { email: 'new@example.com', name: 'New User' }
       });
-      
+
       state = store.getState().user;
       expect(state.isAuth).toBe(true);
     });
@@ -375,27 +374,27 @@ describe('User Slice', () => {
         type: loginUserThunk.fulfilled.type,
         payload: { email: 'test@example.com', name: 'Test User' }
       });
-      
+
       let state = store.getState().user;
       expect(state.isAuth).toBe(true);
-      
+
       // login неудачен
       store.dispatch({
         type: loginUserThunk.rejected.type,
         payload: 'Login failed'
       });
-      
+
       state = store.getState().user;
       expect(state.isAuth).toBe(false);
-      
+
       // register неудачен
       store.dispatch({
         type: registerUserThunk.rejected.type,
         payload: 'Registration failed'
       });
-      
+
       state = store.getState().user;
       expect(state.isAuth).toBe(false);
     });
   });
-}); 
+});

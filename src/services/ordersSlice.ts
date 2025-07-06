@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TOrder } from '../utils/types';
-import { getFeedsApi, getOrdersApi, getOrderByNumberApi, orderBurgerApi } from '../utils/burger-api';
+import {
+  getFeedsApi,
+  getOrdersApi,
+  getOrderByNumberApi,
+  orderBurgerApi
+} from '../utils/burger-api';
 
 interface OrdersState {
   feed: TOrder[];
@@ -21,39 +26,50 @@ const initialState: OrdersState = {
   total: 0,
   totalToday: 0,
   isLoading: false,
-  error: null,
+  error: null
 };
 
-export const fetchFeed = createAsyncThunk('orders/fetchFeed', async (_, { rejectWithValue }) => {
-  try {
-    const data = await getFeedsApi();
-    return {
-      orders: data.orders,
-      total: data.total,
-      totalToday: data.totalToday
-    };
-  } catch (e: any) {
-    return rejectWithValue(e.message || 'Ошибка загрузки ленты заказов');
+export const fetchFeed = createAsyncThunk(
+  'orders/fetchFeed',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await getFeedsApi();
+      return {
+        orders: data.orders,
+        total: data.total,
+        totalToday: data.totalToday
+      };
+    } catch (e: any) {
+      return rejectWithValue(e.message || 'Ошибка загрузки ленты заказов');
+    }
   }
-});
+);
 
-export const fetchUserOrders = createAsyncThunk('orders/fetchUserOrders', async (_, { rejectWithValue }) => {
-  try {
-    const orders = await getOrdersApi();
-    return orders;
-  } catch (e: any) {
-    return rejectWithValue(e.message || 'Ошибка загрузки заказов пользователя');
+export const fetchUserOrders = createAsyncThunk(
+  'orders/fetchUserOrders',
+  async (_, { rejectWithValue }) => {
+    try {
+      const orders = await getOrdersApi();
+      return orders;
+    } catch (e: any) {
+      return rejectWithValue(
+        e.message || 'Ошибка загрузки заказов пользователя'
+      );
+    }
   }
-});
+);
 
-export const fetchOrderByNumber = createAsyncThunk('orders/fetchOrderByNumber', async (number: number, { rejectWithValue }) => {
-  try {
-    const data = await getOrderByNumberApi(number);
-    return data.orders[0] || null;
-  } catch (e: any) {
-    return rejectWithValue(e.message || 'Ошибка загрузки заказа');
+export const fetchOrderByNumber = createAsyncThunk(
+  'orders/fetchOrderByNumber',
+  async (number: number, { rejectWithValue }) => {
+    try {
+      const data = await getOrderByNumberApi(number);
+      return data.orders[0] || null;
+    } catch (e: any) {
+      return rejectWithValue(e.message || 'Ошибка загрузки заказа');
+    }
   }
-});
+);
 
 export const orderBurgerThunk = createAsyncThunk<
   { order: { number: number }; name: string },
@@ -78,7 +94,7 @@ const ordersSlice = createSlice({
     },
     clearCurrentOrder(state) {
       state.currentOrder = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -134,8 +150,8 @@ const ordersSlice = createSlice({
         state.error = action.payload as string;
         state.currentOrder = null;
       });
-  },
+  }
 });
 
 export const { clearOrderByNumber, clearCurrentOrder } = ordersSlice.actions;
-export default ordersSlice.reducer; 
+export default ordersSlice.reducer;

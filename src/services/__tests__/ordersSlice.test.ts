@@ -8,13 +8,12 @@ import ordersReducer, {
   clearCurrentOrder
 } from '../ordersSlice';
 
-const createTestStore = () => {
-  return configureStore({
+const createTestStore = () =>
+  configureStore({
     reducer: {
       orders: ordersReducer
     }
   });
-};
 
 describe('Orders Slice', () => {
   let store: ReturnType<typeof createTestStore>;
@@ -40,7 +39,7 @@ describe('Orders Slice', () => {
   describe('fetchFeed', () => {
     it('должен обрабатывать fetchFeed.pending', () => {
       store.dispatch({ type: fetchFeed.pending.type });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -58,18 +57,18 @@ describe('Orders Slice', () => {
           number: 1
         }
       ];
-      
+
       const mockPayload = {
         orders: mockOrders,
         total: 100,
         totalToday: 25
       };
-      
+
       store.dispatch({
         type: fetchFeed.fulfilled.type,
         payload: mockPayload
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.feed).toEqual(mockOrders);
@@ -80,12 +79,12 @@ describe('Orders Slice', () => {
 
     it('должен обрабатывать fetchFeed.rejected', () => {
       const errorMessage = 'Ошибка загрузки ленты заказов';
-      
+
       store.dispatch({
         type: fetchFeed.rejected.type,
         payload: errorMessage
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(errorMessage);
@@ -98,7 +97,7 @@ describe('Orders Slice', () => {
   describe('fetchUserOrders', () => {
     it('должен обрабатывать fetchUserOrders.pending', () => {
       store.dispatch({ type: fetchUserOrders.pending.type });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -116,12 +115,12 @@ describe('Orders Slice', () => {
           number: 1
         }
       ];
-      
+
       store.dispatch({
         type: fetchUserOrders.fulfilled.type,
         payload: mockUserOrders
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.userOrders).toEqual(mockUserOrders);
@@ -130,12 +129,12 @@ describe('Orders Slice', () => {
 
     it('должен обрабатывать fetchUserOrders.rejected', () => {
       const errorMessage = 'Ошибка загрузки заказов пользователя';
-      
+
       store.dispatch({
         type: fetchUserOrders.rejected.type,
         payload: errorMessage
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(errorMessage);
@@ -146,7 +145,7 @@ describe('Orders Slice', () => {
   describe('fetchOrderByNumber', () => {
     it('должен обрабатывать fetchOrderByNumber.pending', () => {
       store.dispatch({ type: fetchOrderByNumber.pending.type });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -162,12 +161,12 @@ describe('Orders Slice', () => {
         updatedAt: '2023-01-01T00:00:00.000Z',
         number: 12345
       };
-      
+
       store.dispatch({
         type: fetchOrderByNumber.fulfilled.type,
         payload: mockOrder
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.orderByNumber).toEqual(mockOrder);
@@ -176,12 +175,12 @@ describe('Orders Slice', () => {
 
     it('должен обрабатывать fetchOrderByNumber.rejected', () => {
       const errorMessage = 'Ошибка загрузки заказа';
-      
+
       store.dispatch({
         type: fetchOrderByNumber.rejected.type,
         payload: errorMessage
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(errorMessage);
@@ -192,7 +191,7 @@ describe('Orders Slice', () => {
   describe('orderBurgerThunk', () => {
     it('должен обрабатывать orderBurgerThunk.pending', () => {
       store.dispatch({ type: orderBurgerThunk.pending.type });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(true);
       expect(state.error).toBe(null);
@@ -203,12 +202,12 @@ describe('Orders Slice', () => {
         order: { number: 12345 },
         name: 'Тестовый заказ'
       };
-      
+
       store.dispatch({
         type: orderBurgerThunk.fulfilled.type,
         payload: mockOrderResponse
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.currentOrder).toEqual({ number: 12345 });
@@ -217,12 +216,12 @@ describe('Orders Slice', () => {
 
     it('должен обрабатывать orderBurgerThunk.rejected', () => {
       const errorMessage = 'Ошибка оформления заказа';
-      
+
       store.dispatch({
         type: orderBurgerThunk.rejected.type,
         payload: errorMessage
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(errorMessage);
@@ -242,18 +241,18 @@ describe('Orders Slice', () => {
         updatedAt: '2023-01-01T00:00:00.000Z',
         number: 1
       };
-      
+
       store.dispatch({
         type: fetchOrderByNumber.fulfilled.type,
         payload: mockOrder
       });
-      
+
       let state = store.getState().orders;
       expect(state.orderByNumber).toBeTruthy();
-      
+
       // Очищаем orderByNumber
       store.dispatch(clearOrderByNumber());
-      
+
       state = store.getState().orders;
       expect(state.orderByNumber).toBeNull();
     });
@@ -266,13 +265,13 @@ describe('Orders Slice', () => {
         type: orderBurgerThunk.fulfilled.type,
         payload: { order: { number: 12345 }, name: 'Тест' }
       });
-      
+
       let state = store.getState().orders;
       expect(state.currentOrder).toBeTruthy();
-      
+
       // Очищаем currentOrder
       store.dispatch(clearCurrentOrder());
-      
+
       state = store.getState().orders;
       expect(state.currentOrder).toBeNull();
     });
@@ -284,7 +283,7 @@ describe('Orders Slice', () => {
       store.dispatch({ type: fetchFeed.pending.type });
       let state = store.getState().orders;
       expect(state.isLoading).toBe(true);
-      
+
       // Первый запрос - fulfilled
       store.dispatch({
         type: fetchFeed.fulfilled.type,
@@ -292,12 +291,12 @@ describe('Orders Slice', () => {
       });
       state = store.getState().orders;
       expect(state.isLoading).toBe(false);
-      
+
       // Второй запрос - pending
       store.dispatch({ type: orderBurgerThunk.pending.type });
       state = store.getState().orders;
       expect(state.isLoading).toBe(true);
-      
+
       // Второй запрос - fulfilled
       store.dispatch({
         type: orderBurgerThunk.fulfilled.type,
@@ -314,13 +313,13 @@ describe('Orders Slice', () => {
         type: fetchFeed.fulfilled.type,
         payload: { orders: [], total: 0, totalToday: 0 }
       });
-      
+
       // Второй запрос с ошибкой
       store.dispatch({
         type: orderBurgerThunk.rejected.type,
         payload: 'Ошибка оформления заказа'
       });
-      
+
       const state = store.getState().orders;
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe('Ошибка оформления заказа');
@@ -329,4 +328,4 @@ describe('Orders Slice', () => {
       expect(state.feed).toEqual([]);
     });
   });
-}); 
+});

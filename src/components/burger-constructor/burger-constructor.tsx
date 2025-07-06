@@ -8,7 +8,9 @@ import { useNavigate } from 'react-router-dom';
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
   const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
-  const { currentOrder, isLoading, error } = useSelector((state) => state.orders);
+  const { currentOrder, isLoading, error } = useSelector(
+    (state) => state.orders
+  );
   const isAuth = useSelector((state) => state.user.isAuth);
   const navigate = useNavigate();
 
@@ -19,13 +21,13 @@ export const BurgerConstructor: FC = () => {
       navigate('/login');
       return;
     }
-    
+
     const ingredientIds = [
       bun._id,
       ...ingredients.map((item) => item._id),
       bun._id
     ];
-    
+
     await dispatch(orderBurgerThunk(ingredientIds));
   };
 
@@ -50,15 +52,19 @@ export const BurgerConstructor: FC = () => {
       constructorItems={{ bun, ingredients }}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
-      orderModalData={currentOrder ? {
-        _id: '',
-        status: '',
-        name: '',
-        createdAt: '',
-        updatedAt: '',
-        number: currentOrder.number,
-        ingredients: []
-      } : null}
+      orderModalData={
+        currentOrder
+          ? {
+              _id: '',
+              status: '',
+              name: '',
+              createdAt: '',
+              updatedAt: '',
+              number: currentOrder.number,
+              ingredients: []
+            }
+          : null
+      }
       orderError={error}
     />
   );

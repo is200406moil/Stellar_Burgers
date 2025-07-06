@@ -6,13 +6,12 @@ import burgerConstructorReducer, {
   swapIngredients
 } from '../burgerConstructorSlice';
 
-const createTestStore = () => {
-  return configureStore({
+const createTestStore = () =>
+  configureStore({
     reducer: {
       burgerConstructor: burgerConstructorReducer
     }
   });
-};
 
 describe('Burger Constructor Slice', () => {
   let store: ReturnType<typeof createTestStore>;
@@ -76,7 +75,9 @@ describe('Burger Constructor Slice', () => {
     const state = store.getState().burgerConstructor;
     expect(state.bun).toBeNull();
     expect(state.ingredients).toHaveLength(1);
-    expect(state.ingredients[0].name).toBe('Биокотлета из марсианской Магнолии');
+    expect(state.ingredients[0].name).toBe(
+      'Биокотлета из марсианской Магнолии'
+    );
     expect(state.ingredients[0].type).toBe('main');
     expect(state.ingredients[0].id).toBeDefined();
   });
@@ -360,7 +361,7 @@ describe('Burger Constructor Slice', () => {
 
     const state = store.getState().burgerConstructor;
     expect(state.ingredients).toHaveLength(2);
-    
+
     // Проверяем, что id разные
     const id1 = state.ingredients[0].id;
     const id2 = state.ingredients[1].id;
@@ -368,4 +369,4 @@ describe('Burger Constructor Slice', () => {
     expect(id1).not.toBe(mockIngredient._id);
     expect(id2).not.toBe(mockIngredient._id);
   });
-}); 
+});

@@ -1,11 +1,8 @@
 import { FC, useMemo, SyntheticEvent, useState } from 'react';
 import { TConstructorIngredient, TOrder } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import {
-  useSelector,
-  useDispatch,
-  orderBurgerThunk
-} from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
+import { orderBurgerThunk } from '../../services/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {

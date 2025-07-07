@@ -22,7 +22,7 @@ import {
 } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from '../../services/store';
-import { fetchUser } from '../../services/store';
+import { fetchUser } from '../../services/userSlice';
 
 const useAuth = () => {
   const isAuth = useSelector((state) => state.user.isAuth);

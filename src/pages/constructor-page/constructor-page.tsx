@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from '../../services/store';
 import { useEffect, FC } from 'react';
-import { fetchIngredients } from '../../services/store';
+import { fetchIngredients } from '../../services/ingredientsSlice';
 
 import styles from './constructor-page.module.css';
 

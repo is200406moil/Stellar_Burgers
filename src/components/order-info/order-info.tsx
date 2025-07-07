@@ -1,28 +1,29 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { useParams } from 'react-router-dom';
-import { useSelector } from '../../services/store';
-import { useEffect, useState } from 'react';
-import { getOrderByNumberApi } from '../../utils/burger-api';
-import { TOrder } from '@utils-types';
+import {
+  useSelector,
+  useDispatch,
+  fetchOrderByNumber
+} from '../../services/store';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams();
+  const dispatch = useDispatch();
   const ingredients: TIngredient[] = useSelector(
     (state) => state.ingredients.items
   );
-  const [orderData, setOrderData] = useState<TOrder | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { orderByNumber: orderData, isLoading } = useSelector(
+    (state) => state.orders
+  );
 
   useEffect(() => {
-    if (!number) return;
-    setLoading(true);
-    getOrderByNumberApi(Number(number))
-      .then((res) => setOrderData(res.orders[0]))
-      .finally(() => setLoading(false));
-  }, [number]);
+    if (number) {
+      dispatch(fetchOrderByNumber(Number(number)));
+    }
+  }, [dispatch, number]);
 
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
@@ -63,7 +64,7 @@ export const OrderInfo: FC = () => {
     };
   }, [orderData, ingredients]);
 
-  if (loading || !orderInfo) {
+  if (isLoading || !orderInfo) {
     return <Preloader />;
   }
 

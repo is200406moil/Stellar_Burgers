@@ -19,7 +19,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   closeOrderModal,
   orderError
 }) => (
-  <section className={styles.burger_constructor}>
+  <section
+    className={styles.burger_constructor}
+    data-testid='burger-constructor'
+  >
     <form onSubmit={onOrderClick}>
       {constructorItems.bun ? (
         <div className={`${styles.element} mb-4 mr-4`}>
@@ -77,7 +80,9 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       )}
       <div className={`${styles.total} mt-10 mr-4`}>
         <div className={`${styles.cost} mr-10`}>
-          <p className={`text ${styles.text} mr-2`}>{price}</p>
+          <p className={`text ${styles.text} mr-2`} data-testid='order-price'>
+            {price}
+          </p>
           <CurrencyIcon type='primary' />
         </div>
         <Button
@@ -85,6 +90,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
           type='primary'
           size='large'
           children='Оформить заказ'
+          data-testid='order-button'
         />
       </div>
       {orderError && (
@@ -104,6 +110,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       <Modal
         onClose={closeOrderModal}
         title={orderRequest ? 'Оформляем заказ...' : ''}
+        data-testid='order-modal'
       >
         <OrderDetailsUI orderNumber={orderModalData.number} />
       </Modal>
